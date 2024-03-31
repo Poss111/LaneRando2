@@ -267,7 +267,7 @@ class _RandomChampionsWidget extends State<RandomChampionsWidget>
                         child: SlideTransition(
                           position: _offsetAnimation,
                           child: ImageAndTextWidgetTwo(
-                            svgPath: "/images/${laneNames[index]}.svg",
+                            svgPath: "assets/images/${laneNames[index]}.svg",
                             champion: championNames[index],
                             delay: (index + 1) * 200,
                           ),
