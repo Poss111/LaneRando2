@@ -17,6 +17,14 @@ void main() {
   runApp(const MyApp());
 }
 
+const Map<String, String> laneIdToLane = {
+  'top-lane': 'Top',
+  'jg': 'Jungle',
+  'mid-lane': 'Mid',
+  'bot-lane': 'Bot',
+  'support-lane': 'Support',
+};
+
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
@@ -95,9 +103,11 @@ class _MyHomePageState extends State<MyHomePage>
                   position: _offsetAnimation,
                   child: Card.outlined(
                     child: ListTile(
-                        subtitle: Text(
-                            'A simple app to have some fun and randomize your champion picks for each lane.',
-                            style: Theme.of(context).textTheme.bodyLarge)),
+                        title: Center(
+                          child: Text(
+                              'A simple app to have some fun with League of Legends and randomize your champion picks for each of your team members.',
+                              style: Theme.of(context).textTheme.bodyLarge),
+                        )),
                   ),
                 ),
                 const RandomChampionsWidget(),
@@ -180,13 +190,7 @@ class _RandomChampionsWidget extends State<RandomChampionsWidget>
   List<Champion> championNames = [];
 
   List<StaggeredAnimation> _animations = [];
-  List<String> laneNames = [
-    'top-lane',
-    'mid-lane',
-    'jg',
-    'bot-lane',
-    'support-lane'
-  ];
+  List<String> laneNames = laneIdToLane.keys.toList();
 
   @override
   void initState() {
@@ -290,27 +294,7 @@ class _RandomChampionsWidget extends State<RandomChampionsWidget>
                           onPressed: () {
                             String championListText =
                                 championNames.asMap().entries.map((e) {
-                              String lane = '';
-                              switch (e.key) {
-                                case 0:
-                                  lane = 'Top';
-                                  break;
-                                case 1:
-                                  lane = 'Mid';
-                                  break;
-                                case 2:
-                                  lane = 'Jungle';
-                                  break;
-                                case 3:
-                                  lane = 'Bot';
-                                  break;
-                                case 4:
-                                  lane = 'Support';
-                                  break;
-                                default:
-                                  lane = '';
-                              }
-                              return "$lane ${e.value.parsedName}";
+                              return "${laneIdToLane.keys.elementAt(e.key)} ${e.value.parsedName}";
                             }).join(', \n');
                             FlutterClipboard.copy(championListText)
                                 .then((result) {
