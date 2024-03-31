@@ -223,11 +223,24 @@ class _RandomChampionsWidget extends State<RandomChampionsWidget>
   }
 
   void retrieveRandomChampionNames() {
+
+    for (int i = 0; i < 5; i++) {
+    _animations.add(
+        StaggeredAnimation(
+          controller: _controller,
+          index: i,
+        )
+      );
+    }
+    _animations.forEach((element) {
+      element.controller.reset();
+      element.controller.forward();
+    });
     getRandomUniqueChampionNames(5)
         .then((value) => setState(() {
               championNames = value;
             }))
-        .catchError((error) => print(error));
+        .catchError((error) => SnackBar(content: Text('Woops! $error')));
   }
 
   @override
@@ -245,12 +258,15 @@ class _RandomChampionsWidget extends State<RandomChampionsWidget>
                   children: List.generate(5, (index) {
                     return FadeTransition(
                       opacity: _animations[index].animation,
-                      child: SlideTransition(
-                        position: _offsetAnimation,
-                        child: ImageAndTextWidgetTwo(
-                          svgPath: "/images/${laneNames[index]}.svg",
-                          champion: championNames[index],
-                          delay: (index + 1) * 200,
+                      child: RotationTransition(
+                        turns: _animations[index].animation,
+                        child: SlideTransition(
+                          position: _offsetAnimation,
+                          child: ImageAndTextWidgetTwo(
+                            svgPath: "/images/${laneNames[index]}.svg",
+                            champion: championNames[index],
+                            delay: (index + 1) * 200,
+                          ),
                         ),
                       ),
                     );
