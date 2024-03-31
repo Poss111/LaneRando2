@@ -29,7 +29,7 @@ jobs:
         run: flutter pub get
 
       - name: Build web bundle
-        run: flutter build web --base-href "/${{ steps.repo.outputs.repo }}/"
+        run: flutter build web --base-href "/${{ steps.repo.outputs.repo }}/" --release
       
       - name: Upload GitHub Pages artifact
         uses: actions/upload-pages-artifact@v3.0.1

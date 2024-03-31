@@ -25,7 +25,11 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Lane Rando!',
-      theme: ThemeData(primarySwatch: Colors.blue, useMaterial3: true),
+      theme: ThemeData(useMaterial3: true),
+      darkTheme: ThemeData(
+        brightness: Brightness.dark,
+        /* dark theme settings */
+      ),
       home: const MyHomePage(title: 'Lane Rando!'),
     );
   }
@@ -71,7 +75,6 @@ class _MyHomePageState extends State<MyHomePage>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        backgroundColor: Colors.blue,
         appBar: AppBar(
           title: SlideTransition(
             position: _offsetAnimation,
@@ -79,11 +82,9 @@ class _MyHomePageState extends State<MyHomePage>
               widget.title,
               style: const TextStyle(
                 fontSize: 30,
-                color: Colors.black,
               ),
             ),
           ),
-          backgroundColor: Colors.white70,
         ),
         body: Stack(
           children: [
@@ -92,63 +93,47 @@ class _MyHomePageState extends State<MyHomePage>
               children: [
                 SlideTransition(
                   position: _offsetAnimation,
-                  child: Container(
-                    color: Colors.white70,
-                    child: Flex(
-                      direction: Axis.vertical,
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: [
-                        Text('Welcome to Lane Rando!',
-                            style: Theme.of(context).textTheme.headlineSmall),
-                        SizedBox(
-                          width: 250,
-                          child: Text(
-                              'A simple app to have some fun and randomize your champion picks for each lane.',
-                              style: Theme.of(context).textTheme.bodyLarge),
-                        )
-                      ],
-                    ),
+                  child: Card.outlined(
+                    child: ListTile(
+                        subtitle: Text(
+                            'A simple app to have some fun and randomize your champion picks for each lane.',
+                            style: Theme.of(context).textTheme.bodyLarge)),
                   ),
                 ),
                 const RandomChampionsWidget(),
-                Flex(direction: Axis.horizontal, children: [
-                  Expanded(
-                    child: Container(
-                      color: Colors.white70,
-                      child: Flex(
-                        direction: Axis.horizontal,
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          const Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Text(
-                              'Last Updated: 3/22/2023',
-                              style: TextStyle(fontSize: 20),
-                            ),
-                          ),
-                          Text.rich(
+                Flex(
+                  direction: Axis.horizontal,
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Wrap(children: [
+                      Text(
+                        'Last Updated: 3/30/2024',
+                        style: Theme.of(context).textTheme.bodySmall,
+                      ),
+                    ]),
+                    Flexible(
+                      child: Text.rich(
+                        TextSpan(
+                          text: 'Made By: Daniel Poss ',
+                          style: Theme.of(context).textTheme.bodySmall,
+                          children: [
                             TextSpan(
-                              text: 'Made By: Daniel Poss ',
-                              children: [
-                                TextSpan(
-                                  text: '(Poss111)',
-                                  style: const TextStyle(
-                                    color: Colors.blue,
-                                  ),
-                                  recognizer: TapGestureRecognizer()
-                                    ..onTap = () {
-                                      launchUrl(Uri.parse(
-                                          "https://github.com/Poss111"));
-                                    },
-                                ),
-                              ],
+                              text: '(Poss111)',
+                              style: const TextStyle(
+                                color: Colors.blue,
+                              ),
+                              recognizer: TapGestureRecognizer()
+                                ..onTap = () {
+                                  launchUrl(Uri.parse(
+                                      "https://github.com/Poss111"));
+                                },
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
                     ),
-                  ),
-                ])
+                  ],
+                )
               ],
             ),
             // Positioned(
@@ -252,79 +237,78 @@ class _RandomChampionsWidget extends State<RandomChampionsWidget>
         builder:
             (BuildContext context, AsyncSnapshot<List<Champion>> snapshot) {
           if (snapshot.hasData) {
-            return Center(
-              child: Flex(
-                direction: Axis.vertical,
-                children: <Widget>[
-                  Wrap(
-                    children: List.generate(5, (index) {
-                      return FadeTransition(
-                        opacity: _animations[index].animation,
-                        child: SlideTransition(
-                          position: _offsetAnimation,
-                          child: ImageAndTextWidgetTwo(
-                            svgPath: "/images/${laneNames[index]}.svg",
-                            champion: championNames[index],
-                            delay: (index + 1) * 200,
+            return Flex(
+              direction: Axis.vertical,
+              children: <Widget>[
+                Wrap(
+                  alignment: WrapAlignment.spaceEvenly,
+                  children: List.generate(5, (index) {
+                    return FadeTransition(
+                      opacity: _animations[index].animation,
+                      child: SlideTransition(
+                        position: _offsetAnimation,
+                        child: ImageAndTextWidgetTwo(
+                          svgPath: "/images/${laneNames[index]}.svg",
+                          champion: championNames[index],
+                          delay: (index + 1) * 200,
+                        ),
+                      ),
+                    );
+                  }),
+                ),
+                SizedBox(
+                  width: 200,
+                  child: Flex(
+                      direction: Axis.horizontal,
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Expanded(
+                          child: ElevatedButton(
+                            onPressed: retrieveRandomChampionNames,
+                            child: const Text('Randomize!'),
                           ),
                         ),
-                      );
-                    }),
-                  ),
-                  SizedBox(
-                    width: 200,
-                    child: Flex(
-                        direction: Axis.horizontal,
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Expanded(
-                            child: ElevatedButton(
-                              onPressed: retrieveRandomChampionNames,
-                              child: const Text('Randomize!'),
-                            ),
-                          ),
-                          IconButton(
-                            icon: const Icon(Icons.copy),
-                            tooltip: 'Copy current names to Clipboard',
-                            onPressed: () {
-                              String championListText =
-                                  championNames.asMap().entries.map((e) {
-                                String lane = '';
-                                switch (e.key) {
-                                  case 0:
-                                    lane = 'Top';
-                                    break;
-                                  case 1:
-                                    lane = 'Mid';
-                                    break;
-                                  case 2:
-                                    lane = 'Jungle';
-                                    break;
-                                  case 3:
-                                    lane = 'Bot';
-                                    break;
-                                  case 4:
-                                    lane = 'Support';
-                                    break;
-                                  default:
-                                    lane = '';
-                                }
-                                return "$lane ${e.value.parsedName}";
-                              }).join(', \n');
-                              FlutterClipboard.copy(championListText)
-                                  .then((result) {
-                                const snackBar = SnackBar(
-                                  content: Text('Copied to Clipboard'),
-                                );
-                                ScaffoldMessenger.of(context)
-                                    .showSnackBar(snackBar);
-                              });
-                            },
-                          )
-                        ]),
-                  ),
-                ],
-              ),
+                        IconButton(
+                          icon: const Icon(Icons.copy),
+                          tooltip: 'Copy current names to clipboard',
+                          onPressed: () {
+                            String championListText =
+                                championNames.asMap().entries.map((e) {
+                              String lane = '';
+                              switch (e.key) {
+                                case 0:
+                                  lane = 'Top';
+                                  break;
+                                case 1:
+                                  lane = 'Mid';
+                                  break;
+                                case 2:
+                                  lane = 'Jungle';
+                                  break;
+                                case 3:
+                                  lane = 'Bot';
+                                  break;
+                                case 4:
+                                  lane = 'Support';
+                                  break;
+                                default:
+                                  lane = '';
+                              }
+                              return "$lane ${e.value.parsedName}";
+                            }).join(', \n');
+                            FlutterClipboard.copy(championListText)
+                                .then((result) {
+                              const snackBar = SnackBar(
+                                content: Text('Copied to Clipboard'),
+                              );
+                              ScaffoldMessenger.of(context)
+                                  .showSnackBar(snackBar);
+                            });
+                          },
+                        )
+                      ]),
+                ),
+              ],
             );
           } else if (snapshot.hasError) {
             // Handle error state
